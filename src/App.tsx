@@ -496,17 +496,20 @@ function App() {
     return () => ctx.revert();
   }, []);
 
+  // Check if mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  
   // Scroll-driven animations
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero scroll exit
+      // Hero scroll exit - disable pin on mobile for better UX
       if (heroRef.current && heroHeadlineRef.current && heroCircleRef.current && heroCtaRef.current) {
         const heroScrollTl = gsap.timeline({
           scrollTrigger: {
             trigger: heroRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: true,
+            pin: !isMobile,
             scrub: 1.2,
             onLeaveBack: () => {
               gsap.set([heroHeadlineRef.current, heroCircleRef.current, heroCtaRef.current], {
@@ -533,14 +536,14 @@ function App() {
         );
       }
 
-      // New Work Section
+      // New Work Section - disable pin on mobile
       if (newWorkRef.current) {
         const newWorkTl = gsap.timeline({
           scrollTrigger: {
             trigger: newWorkRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: true,
+            pin: !isMobile,
             scrub: 1.2,
           }
         });
@@ -624,14 +627,14 @@ function App() {
         }
       }
 
-      // About Section
+      // About Section - disable pin on mobile
       if (aboutRef.current) {
         const aboutTl = gsap.timeline({
           scrollTrigger: {
             trigger: aboutRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: true,
+            pin: !isMobile,
             scrub: 1.2,
           }
         });
@@ -701,14 +704,14 @@ function App() {
         }
       }
 
-      // Services Section
+      // Services Section - disable pin on mobile
       if (servicesRef.current) {
         const servicesTl = gsap.timeline({
           scrollTrigger: {
             trigger: servicesRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: true,
+            pin: !isMobile,
             scrub: 1.2,
           }
         });
@@ -778,14 +781,14 @@ function App() {
         }
       }
 
-      // Violet Panel Section (Let's Create Something Great)
+      // Violet Panel Section (Let's Create Something Great) - disable pin on mobile
       if (violetRef.current) {
         const violetTl = gsap.timeline({
           scrollTrigger: {
             trigger: violetRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: true,
+            pin: !isMobile,
             scrub: 1.2,
           }
         });
@@ -1056,7 +1059,7 @@ function App() {
 
       {/* Section 1: Hero */}
       <section ref={heroRef} className="section-pinned z-10">
-        <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-[8vw]">
+        <div className="relative md:absolute inset-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-[8vw] py-8 md:py-0">
           {/* Text Content */}
           <div className="relative z-20 text-center md:text-left md:w-1/2 order-2 md:order-1 mt-8 md:mt-0">
             <div className="mb-4 md:mb-6">
@@ -1089,7 +1092,7 @@ function App() {
           <div className="relative md:w-1/2 flex items-center justify-center order-1 md:order-2">
             <div 
               ref={heroCircleRef}
-              className="media-circle w-[70vw] h-[70vw] md:w-[45vw] md:h-[45vw] max-w-[500px] max-h-[500px] flex items-center justify-center bg-[#0B0B0D]/50"
+              className="media-circle w-[65vw] h-[65vw] md:w-[45vw] md:h-[45vw] max-w-[320px] max-h-[320px] md:max-w-[500px] md:max-h-[500px] flex items-center justify-center bg-[#0B0B0D]/50"
             >
               <svg 
                 viewBox="0 0 593.14 595.28" 
@@ -1124,10 +1127,10 @@ function App() {
 
       {/* Section 2: New Work */}
       <section ref={newWorkRef} className="section-pinned z-20">
-        <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-[8vw]">
+        <div className="relative md:absolute inset-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-[8vw] py-8 md:py-0">
           {/* Circle Image */}
           <div className="relative md:w-1/2 flex items-center justify-center order-1 mb-6 md:mb-0">
-            <div className="media-circle w-[60vw] h-[60vw] md:w-[40vw] md:h-[40vw] max-w-[450px] max-h-[450px]">
+            <div className="media-circle w-[55vw] h-[55vw] md:w-[40vw] md:h-[40vw] max-w-[280px] max-h-[280px] md:max-w-[450px] md:max-h-[450px]">
               <CircleImage src="/images/new_scene_circle_lifestyle.jpg" alt="Lifestyle" />
             </div>
           </div>
@@ -1164,7 +1167,7 @@ function App() {
 
       {/* Section 3: About */}
       <section ref={aboutRef} id="studio" className="section-pinned z-30">
-        <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-[8vw]">
+        <div className="relative md:absolute inset-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-[8vw] py-8 md:py-0">
           {/* Text Content */}
           <div className="relative z-20 text-center md:text-left md:w-1/2 order-2 md:order-1 mt-6 md:mt-0">
             <div className="index-label micro-label text-[#A7ACB5] mb-3 md:mb-4">(1)</div>
@@ -1195,7 +1198,7 @@ function App() {
           
           {/* Circle Image */}
           <div className="relative md:w-1/2 flex items-center justify-center order-1 md:order-2 mb-6 md:mb-0">
-            <div className="media-circle w-[60vw] h-[60vw] md:w-[40vw] md:h-[40vw] max-w-[450px] max-h-[450px]">
+            <div className="media-circle w-[55vw] h-[55vw] md:w-[40vw] md:h-[40vw] max-w-[280px] max-h-[280px] md:max-w-[450px] md:max-h-[450px]">
               <CircleImage src="/images/about_circle_workspace.jpg" alt="Workspace" />
             </div>
           </div>
@@ -1204,10 +1207,10 @@ function App() {
 
       {/* Section 4: Services */}
       <section ref={servicesRef} id="services" className="section-pinned z-40">
-        <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-[8vw]">
+        <div className="relative md:absolute inset-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-[8vw] py-8 md:py-0">
           {/* Circle Image */}
           <div className="relative md:w-1/2 flex items-center justify-center order-1 mb-6 md:mb-0">
-            <div className="media-circle w-[60vw] h-[60vw] md:w-[40vw] md:h-[40vw] max-w-[450px] max-h-[450px]">
+            <div className="media-circle w-[55vw] h-[55vw] md:w-[40vw] md:h-[40vw] max-w-[280px] max-h-[280px] md:max-w-[450px] md:max-h-[450px]">
               <CircleImage src="/images/services_circle_collab.jpg" alt="Collaboration" />
             </div>
           </div>
@@ -1241,8 +1244,8 @@ function App() {
       </section>
 
       {/* Section 5: Violet Panel */}
-      <section ref={violetRef} className="section-pinned z-50">
-        <div className="absolute inset-0 flex items-center justify-center px-6 md:px-[8vw]">
+      <section ref={violetRef} className="section-pinned z-50 bg-[#6E2B88]/90">
+        <div className="relative md:absolute inset-0 flex items-center justify-center px-6 md:px-[8vw] py-8 md:py-0">
           <div className="relative z-10 text-center md:text-left max-w-lg">
             <div className="headline-group">
               <h2 className="headline-xl text-[clamp(32px,7vw,72px)] text-[#F4F6F8] leading-[0.95]">

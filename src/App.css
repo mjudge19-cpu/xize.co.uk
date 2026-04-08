@@ -52,48 +52,36 @@ select.form-input {
 @media (max-width: 768px) {
   .section-pinned {
     overflow: visible;
+    min-height: auto;
+    padding-top: 80px;
+    padding-bottom: 60px;
   }
   
+  /* Mobile: stack content vertically with better spacing */
+  .section-pinned > div {
+    position: relative;
+    height: auto;
+    min-height: calc(100vh - 140px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  
+  /* Ensure media circles don't get too large on mobile */
   .media-circle {
-    width: 70vw !important;
-    height: 70vw !important;
-    left: 50% !important;
-    right: auto !important;
-    top: 15vh !important;
-    transform: translateX(-50%) !important;
+    max-width: 280px;
+    max-height: 280px;
   }
   
+  /* Better text alignment on mobile */
   .headline-group {
-    width: 84vw !important;
-    left: 8vw !important;
-    right: auto !important;
-    top: 55vh !important;
-    text-align: left !important;
+    text-align: center;
   }
   
-  .body-text,
-  .subheadline {
-    width: 84vw !important;
-    left: 8vw !important;
-    right: auto !important;
-    text-align: left !important;
-  }
-  
-  .cta-button,
-  .cta-row {
-    left: 8vw !important;
-    right: auto !important;
-  }
-  
-  .violet-panel {
-    width: 88vw !important;
-    right: 6vw !important;
-    height: 60vh !important;
-  }
-  
-  .index-label,
-  .new-label {
-    top: 8vh !important;
+  /* Reduce animation complexity on mobile for better performance */
+  .glass-blob {
+    opacity: 0.5;
   }
 }
 
