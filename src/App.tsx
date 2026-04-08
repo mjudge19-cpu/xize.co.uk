@@ -109,6 +109,15 @@ function CircleImage({ src, alt }: { src: string; alt: string }) {
 
 // Dark liquid glossy glass background - modern glassmorphism
 function DynamicBackground() {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ backgroundColor: '#000000' }}>
       {/* Base gradient layer */}
@@ -116,12 +125,16 @@ function DynamicBackground() {
         background: 'radial-gradient(ellipse at 20% 30%, rgba(40, 20, 60, 0.4) 0%, transparent 50%), radial-gradient(ellipse at 80% 70%, rgba(20, 40, 60, 0.3) 0%, transparent 50%)'
       }} />
       
-      {/* Glass blobs */}
-      <div className="glass-blob blob-1" />
-      <div className="glass-blob blob-2" />
-      <div className="glass-blob blob-3" />
-      <div className="glass-blob blob-4" />
-      <div className="glass-blob blob-5" />
+      {/* Glass blobs - fewer on mobile */}
+      <div className={`glass-blob blob-1 ${isMobile ? 'mobile' : ''}`} />
+      <div className={`glass-blob blob-2 ${isMobile ? 'mobile' : ''}`} />
+      {!isMobile && (
+        <>
+          <div className="glass-blob blob-3" />
+          <div className="glass-blob blob-4" />
+          <div className="glass-blob blob-5" />
+        </>
+      )}
       
       {/* Edge vignette */}
       <div className="absolute inset-0" style={{
@@ -135,6 +148,11 @@ function DynamicBackground() {
           backdrop-filter: blur(8px);
           -webkit-backdrop-filter: blur(8px);
           will-change: transform, border-radius;
+        }
+        
+        .glass-blob.mobile {
+          animation: none !important;
+          opacity: 0.4;
         }
         
         .blob-1 {
@@ -154,6 +172,12 @@ function DynamicBackground() {
           animation: morph1 20s ease-in-out infinite;
         }
         
+        .blob-1.mobile {
+          width: 250px;
+          height: 200px;
+          left: -80px;
+        }
+        
         .blob-2 {
           width: 450px;
           height: 350px;
@@ -169,6 +193,12 @@ function DynamicBackground() {
             inset -2px -2px 20px rgba(0, 0, 0, 0.3),
             0 0 40px rgba(50, 120, 140, 0.15);
           animation: morph2 18s ease-in-out infinite;
+        }
+        
+        .blob-2.mobile {
+          width: 200px;
+          height: 180px;
+          right: -60px;
         }
         
         .blob-3 {
@@ -463,32 +493,34 @@ function App() {
     }
   };
 
-  // Hero load animation
+  // Hero load animation - simplified on mobile
   useEffect(() => {
+    const isMobileViewport = window.innerWidth < 768;
+    
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: 0.2 });
+      const tl = gsap.timeline({ delay: isMobileViewport ? 0.1 : 0.2 });
       
       if (heroCircleRef.current) {
         tl.fromTo(heroCircleRef.current, 
-          { scale: 0.8, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 1, ease: 'power3.out' }
+          { scale: 0.9, opacity: 0 },
+          { scale: 1, opacity: 1, duration: isMobileViewport ? 0.6 : 1, ease: 'power3.out' }
         );
       }
       
       const words = heroHeadlineRef.current?.querySelectorAll('.word');
       if (words && words.length > 0) {
         tl.fromTo(words,
-          { y: 50, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: 'power3.out' },
-          '-=0.6'
+          { y: isMobileViewport ? 20 : 50, opacity: 0 },
+          { y: 0, opacity: 1, duration: isMobileViewport ? 0.4 : 0.6, stagger: isMobileViewport ? 0.05 : 0.1, ease: 'power3.out' },
+          isMobileViewport ? '-=0.3' : '-=0.6'
         );
       }
       
       if (heroCtaRef.current) {
         tl.fromTo(heroCtaRef.current,
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' },
-          '-=0.2'
+          { y: 10, opacity: 0 },
+          { y: 0, opacity: 1, duration: isMobileViewport ? 0.3 : 0.5, ease: 'power2.out' },
+          isMobileViewport ? '-=0.1' : '-=0.2'
         );
       }
     });
@@ -496,20 +528,20 @@ function App() {
     return () => ctx.revert();
   }, []);
 
-  // Check if mobile
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  
-  // Scroll-driven animations
+  // Scroll-driven animations - disabled on mobile for performance
   useLayoutEffect(() => {
+    // Skip complex scroll animations on mobile
+    const isMobileViewport = window.innerWidth < 768;
+    
     const ctx = gsap.context(() => {
-      // Hero scroll exit - disable pin on mobile for better UX
-      if (heroRef.current && heroHeadlineRef.current && heroCircleRef.current && heroCtaRef.current) {
+      // Hero scroll exit - skip entirely on mobile
+      if (!isMobileViewport && heroRef.current && heroHeadlineRef.current && heroCircleRef.current && heroCtaRef.current) {
         const heroScrollTl = gsap.timeline({
           scrollTrigger: {
             trigger: heroRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: !isMobile,
+            pin: true,
             scrub: 1.2,
             onLeaveBack: () => {
               gsap.set([heroHeadlineRef.current, heroCircleRef.current, heroCtaRef.current], {
@@ -536,14 +568,14 @@ function App() {
         );
       }
 
-      // New Work Section - disable pin on mobile
-      if (newWorkRef.current) {
+      // New Work Section - skip entirely on mobile
+      if (!isMobileViewport && newWorkRef.current) {
         const newWorkTl = gsap.timeline({
           scrollTrigger: {
             trigger: newWorkRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: !isMobile,
+            pin: true,
             scrub: 1.2,
           }
         });
@@ -627,14 +659,14 @@ function App() {
         }
       }
 
-      // About Section - disable pin on mobile
-      if (aboutRef.current) {
+      // About Section - skip entirely on mobile
+      if (!isMobileViewport && aboutRef.current) {
         const aboutTl = gsap.timeline({
           scrollTrigger: {
             trigger: aboutRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: !isMobile,
+            pin: true,
             scrub: 1.2,
           }
         });
@@ -704,14 +736,14 @@ function App() {
         }
       }
 
-      // Services Section - disable pin on mobile
-      if (servicesRef.current) {
+      // Services Section - skip entirely on mobile
+      if (!isMobileViewport && servicesRef.current) {
         const servicesTl = gsap.timeline({
           scrollTrigger: {
             trigger: servicesRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: !isMobile,
+            pin: true,
             scrub: 1.2,
           }
         });
@@ -781,14 +813,14 @@ function App() {
         }
       }
 
-      // Violet Panel Section (Let's Create Something Great) - disable pin on mobile
-      if (violetRef.current) {
+      // Violet Panel Section (Let's Create Something Great) - skip entirely on mobile
+      if (!isMobileViewport && violetRef.current) {
         const violetTl = gsap.timeline({
           scrollTrigger: {
             trigger: violetRef.current,
             start: 'top top',
             end: '+=150%',
-            pin: !isMobile,
+            pin: true,
             scrub: 1.2,
           }
         });
@@ -842,7 +874,7 @@ function App() {
         }
       }
 
-      // Work section cards animation
+      // Work section cards animation - simplified on mobile
       if (workRef.current) {
         // Kill existing work card ScrollTriggers to prevent duplicates on filter change
         ScrollTrigger.getAll().forEach(st => {
@@ -854,23 +886,23 @@ function App() {
         const workCards = workRef.current.querySelectorAll('.work-card');
         workCards.forEach((card, i) => {
           gsap.fromTo(card,
-            { y: 60, opacity: 0 },
+            { y: isMobileViewport ? 30 : 60, opacity: 0 },
             {
               y: 0, opacity: 1,
-              duration: 0.6,
-              delay: i * 0.1,
+              duration: isMobileViewport ? 0.4 : 0.6,
+              delay: i * (isMobileViewport ? 0.05 : 0.1),
               ease: 'power2.out',
               scrollTrigger: {
                 trigger: card,
-                start: 'top 90%',
+                start: isMobileViewport ? 'top 95%' : 'top 90%',
               }
             }
           );
         });
       }
 
-      // Contact section animation
-      if (contactRef.current) {
+      // Contact section animation - simplified on mobile
+      if (!isMobileViewport && contactRef.current) {
         const contactHeadline = contactRef.current.querySelector('.headline-group');
         const contactForm = contactRef.current.querySelector('.contact-form');
         
@@ -1244,7 +1276,7 @@ function App() {
       </section>
 
       {/* Section 5: Violet Panel */}
-      <section ref={violetRef} className="section-pinned z-50 bg-[#6E2B88]/90">
+      <section ref={violetRef} className="section-pinned z-50">
         <div className="relative md:absolute inset-0 flex items-center justify-center px-6 md:px-[8vw] py-8 md:py-0">
           <div className="relative z-10 text-center md:text-left max-w-lg">
             <div className="headline-group">
@@ -1623,7 +1655,7 @@ function App() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
                 <div className="text-center">
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-[#6E2B88] to-[#4a1a5c] mx-auto mb-4 flex items-center justify-center">
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-[#3a3a3a] to-[#1a1a1a] mx-auto mb-4 flex items-center justify-center">
                     <span className="text-2xl md:text-3xl text-[#F4F6F8]">MJ</span>
                   </div>
                   <h4 className="text-[#F4F6F8] font-semibold mb-1">Marco J</h4>
