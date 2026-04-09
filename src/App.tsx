@@ -1206,19 +1206,24 @@ function App() {
 
         {/* Page 1: Work */}
         <div className={`mobile-page ${currentPage === 1 ? 'active' : ''}`}>
-          <div className="mobile-page-content" style={{ maxWidth: '100%', padding: '0 20px' }}>
-            <div className="mb-4">
-              <h2 className="headline-xl text-[clamp(28px,8vw,40px)] text-[#F4F6F8]">SELECTED WORK</h2>
+          <div className="mobile-page-content" style={{ maxWidth: '100%', padding: '0 20px', height: '100%', justifyContent: 'flex-start', paddingTop: '20px' }}>
+            <div className="mb-3 flex-shrink-0">
+              <h2 className="headline-xl text-[clamp(24px,7vw,36px)] text-[#F4F6F8]">SELECTED WORK</h2>
               <p className="text-[#A7ACB5] text-xs mt-1">Tap to view project details</p>
             </div>
-            <div className="grid grid-cols-1 gap-3 w-full overflow-y-auto max-h-[60vh] pb-4">
+            <div className="grid grid-cols-1 gap-3 w-full overflow-y-auto pb-4" style={{ maxHeight: 'calc(100vh - 220px)' }}>
               {filteredProjects.slice(0, 4).map((project, index) => (
                 <div 
                   key={project.id}
-                  className={`work-card relative overflow-hidden rounded-xl ${project.isPlaceholder ? '' : 'cursor-pointer'}`}
-                  onClick={() => !project.isPlaceholder && openProject(project, index)}
+                  className={`work-card relative overflow-hidden rounded-xl ${project.isPlaceholder ? '' : 'cursor-pointer'} active:scale-[0.98] transition-transform`}
+                  onClick={() => {
+                    if (!project.isPlaceholder) {
+                      openProject(project, index);
+                    }
+                  }}
+                  style={{ pointerEvents: 'auto' }}
                 >
-                  <div className="relative aspect-[16/9] overflow-hidden">
+                  <div className="relative aspect-[16/9] overflow-hidden bg-[#1a1a1a]">
                     {(project as {isVideo?: boolean}).isVideo ? (
                       <video 
                         src={project.image}
@@ -1229,14 +1234,19 @@ function App() {
                       <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0D] via-[#0B0B0D]/60 to-transparent opacity-90" />
+                    {!project.isPlaceholder && (
+                      <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#B8FF2C] flex items-center justify-center">
+                        <ExternalLink className="w-4 h-4 text-[#0B0B0D]" />
+                      </div>
+                    )}
                   </div>
-                  <div className="absolute inset-0 flex flex-col justify-end p-4">
-                    <div className="flex flex-wrap gap-2 mb-1">
+                  <div className="absolute inset-0 flex flex-col justify-end p-3">
+                    <div className="flex flex-wrap gap-1.5 mb-1">
                       {project.tags?.map((tag) => (
                         <span key={tag} className="micro-label text-[#B8FF2C] text-[9px]">{tag}</span>
                       ))}
                     </div>
-                    <h3 className="text-lg font-bold text-[#F4F6F8]">{project.title}</h3>
+                    <h3 className="text-base font-bold text-[#F4F6F8]">{project.title}</h3>
                   </div>
                 </div>
               ))}
