@@ -337,6 +337,7 @@ function App() {
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [studioOpen, setStudioOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
   const studioRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const projectDetailRef = useRef<HTMLDivElement>(null);
@@ -353,6 +354,24 @@ function App() {
   const violetRef = useRef<HTMLDivElement>(null);
   const workRef = useRef<HTMLDivElement>(null);
   const contactRef = useRef<HTMLDivElement>(null);
+  
+  // Mobile pages configuration
+  const mobilePages = [
+    { id: 'home', label: 'Home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+    { id: 'work', label: 'Work', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
+    { id: 'services', label: 'Services', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+    { id: 'contact', label: 'Contact', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+  ];
+  
+  // Navigate to page
+  const goToPage = (pageIndex: number) => {
+    setCurrentPage(pageIndex);
+    // Also scroll desktop version
+    const refs = [heroRef, workRef, servicesRef, contactRef];
+    if (refs[pageIndex]?.current) {
+      refs[pageIndex].current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   // Filtered projects
   const filteredProjects = filter === 'All' 
@@ -1047,6 +1066,18 @@ function App() {
         </button>
       </nav>
       
+      {/* Mobile Page Dots Indicator */}
+      <div className="mobile-page-dots md:hidden">
+        {mobilePages.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToPage(index)}
+            className={`mobile-page-dot ${currentPage === index ? 'active' : ''}`}
+            aria-label={`Go to ${mobilePages[index].label}`}
+          />
+        ))}
+      </div>
+      
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div 
@@ -1075,31 +1106,40 @@ function App() {
               <span className="micro-label text-[#A7ACB5] text-xs">MENU</span>
             </div>
             
-            {/* Nav Links */}
+            {/* Nav Links - Page Based */}
             <nav className="flex flex-col items-center gap-4 w-full max-w-xs">
-              {[
-                { label: 'Work', action: () => { setMobileMenuOpen(false); setTimeout(() => scrollToSection(workRef.current), 300); } },
-                { label: 'Services', action: () => { setMobileMenuOpen(false); setTimeout(() => scrollToSection(servicesRef.current), 300); } },
-                { label: 'Studio', action: () => { setMobileMenuOpen(false); openStudio(); } },
-                { label: 'Contact', action: () => { setMobileMenuOpen(false); setTimeout(() => scrollToSection(contactRef.current), 300); } },
-              ].map((item, index) => (
+              {mobilePages.map((page, index) => (
                 <button
-                  key={item.label}
-                  onClick={item.action}
-                  className="mobile-nav-link text-3xl font-bold text-[#F4F6F8] hover:text-[#B8FF2C] transition-all duration-300 bg-transparent border-none cursor-pointer py-3"
+                  key={page.id}
+                  onClick={() => { 
+                    setMobileMenuOpen(false); 
+                    goToPage(index);
+                  }}
+                  className={`mobile-nav-link text-3xl font-bold transition-all duration-300 bg-transparent border-none cursor-pointer py-3 ${currentPage === index ? 'text-[#B8FF2C]' : 'text-[#F4F6F8] hover:text-[#B8FF2C]'}`}
                   style={{ 
                     opacity: 0,
                     animation: `fadeInUp 0.4s ease forwards`,
                     animationDelay: `${index * 75}ms`
                   }}
                 >
-                  {item.label}
+                  {page.label}
                 </button>
               ))}
+              <button
+                onClick={() => { setMobileMenuOpen(false); openStudio(); }}
+                className="mobile-nav-link text-3xl font-bold text-[#F4F6F8] hover:text-[#B8FF2C] transition-all duration-300 bg-transparent border-none cursor-pointer py-3"
+                style={{ 
+                  opacity: 0,
+                  animation: `fadeInUp 0.4s ease forwards`,
+                  animationDelay: `${mobilePages.length * 75}ms`
+                }}
+              >
+                Studio
+              </button>
             </nav>
             
             {/* Bottom info */}
-            <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-3">
+            <div className="absolute bottom-24 left-0 right-0 flex flex-col items-center gap-3">
               <a 
                 href="mailto:hello@xize.co.uk" 
                 className="text-[#A7ACB5] text-sm hover:text-[#B8FF2C] transition-colors"
@@ -1128,6 +1168,152 @@ function App() {
         }
       `}</style>
 
+      {/* Mobile Page Container - Shows only on mobile */}
+      <div className="md:hidden mobile-page-container">
+        {/* Page 0: Home */}
+        <div className={`mobile-page ${currentPage === 0 ? 'active' : ''}`}>
+          <div className="mobile-page-content">
+            <div className="mb-2">
+              <span className="micro-label text-[#A7ACB5] text-[10px] tracking-wider">CREATIVE STUDIO</span>
+            </div>
+            <h1 className="headline-xl text-[clamp(32px,12vw,56px)] text-[#F4F6F8] leading-[0.95] mb-4">
+              <span className="block">WE CRAFT</span>
+              <span className="block">DIGITAL</span>
+              <span className="block text-[#B8FF2C]">EXPERIENCES</span>
+            </h1>
+            <p className="text-[#A7ACB5] text-sm mb-6 max-w-[280px]">
+              Design systems, immersive sites, and interaction craft for brands that want to stand out.
+            </p>
+            <div className="flex flex-col gap-3 w-full max-w-[280px]">
+              <button 
+                onClick={() => goToPage(1)}
+                className="btn-primary w-full py-3 text-sm flex items-center justify-center gap-2"
+              >
+                View Our Work
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <button 
+                onClick={() => goToPage(3)}
+                className="btn-outline w-full py-3 text-sm"
+              >
+                Get in Touch
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Page 1: Work */}
+        <div className={`mobile-page ${currentPage === 1 ? 'active' : ''}`}>
+          <div className="mobile-page-content" style={{ maxWidth: '100%', padding: '0 20px' }}>
+            <div className="mb-4">
+              <h2 className="headline-xl text-[clamp(28px,8vw,40px)] text-[#F4F6F8]">SELECTED WORK</h2>
+              <p className="text-[#A7ACB5] text-xs mt-1">Tap to view project details</p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 w-full overflow-y-auto max-h-[60vh] pb-4">
+              {filteredProjects.slice(0, 4).map((project, index) => (
+                <div 
+                  key={project.id}
+                  className={`work-card relative overflow-hidden rounded-xl ${project.isPlaceholder ? '' : 'cursor-pointer'}`}
+                  onClick={() => !project.isPlaceholder && openProject(project, index)}
+                >
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    {(project as {isVideo?: boolean}).isVideo ? (
+                      <video 
+                        src={project.image}
+                        autoPlay muted loop playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0D] via-[#0B0B0D]/60 to-transparent opacity-90" />
+                  </div>
+                  <div className="absolute inset-0 flex flex-col justify-end p-4">
+                    <div className="flex flex-wrap gap-2 mb-1">
+                      {project.tags?.map((tag) => (
+                        <span key={tag} className="micro-label text-[#B8FF2C] text-[9px]">{tag}</span>
+                      ))}
+                    </div>
+                    <h3 className="text-lg font-bold text-[#F4F6F8]">{project.title}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Page 2: Services */}
+        <div className={`mobile-page ${currentPage === 2 ? 'active' : ''}`}>
+          <div className="mobile-page-content">
+            <div className="mb-6">
+              <span className="micro-label text-[#A7ACB5] text-[10px]">WHAT WE DO</span>
+              <h2 className="headline-xl text-[clamp(28px,8vw,40px)] text-[#F4F6F8] mt-2">SERVICES</h2>
+            </div>
+            <div className="space-y-4 w-full max-w-[320px]">
+              {[
+                { name: 'Design Systems', desc: 'Scalable UI components & documentation', icon: '01' },
+                { name: 'Web Development', desc: 'React, GSAP, performance-first builds', icon: '02' },
+                { name: 'Motion Design', desc: 'Scroll-driven storytelling & micro-interactions', icon: '03' },
+                { name: 'Brand Identity', desc: 'Typography, art direction & visual systems', icon: '04' },
+              ].map((service) => (
+                <div key={service.name} className="flex items-start gap-4 p-4 rounded-xl bg-[rgba(244,246,248,0.03)] border border-[rgba(244,246,248,0.08)]">
+                  <span className="text-[#B8FF2C] font-mono text-sm">{service.icon}</span>
+                  <div className="text-left">
+                    <h3 className="text-[#F4F6F8] font-semibold text-sm">{service.name}</h3>
+                    <p className="text-[#A7ACB5] text-xs mt-1">{service.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button 
+              onClick={() => openStudio()}
+              className="btn-outline mt-6 text-sm px-6 py-3"
+            >
+              About Our Studio
+            </button>
+          </div>
+        </div>
+
+        {/* Page 3: Contact */}
+        <div className={`mobile-page ${currentPage === 3 ? 'active' : ''}`}>
+          <div className="mobile-page-content" style={{ maxWidth: '340px' }}>
+            <div className="mb-5">
+              <h2 className="headline-xl text-[clamp(24px,7vw,36px)] text-[#F4F6F8]">LET'S TALK</h2>
+              <p className="text-[#A7ACB5] text-xs mt-2">Ready to start your project?</p>
+            </div>
+            <a 
+              href="mailto:hello@xize.co.uk"
+              className="btn-primary w-full py-3 text-sm flex items-center justify-center gap-2 mb-4"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              hello@xize.co.uk
+            </a>
+            <form 
+              action="https://formspree.io/f/xreojakb" 
+              method="POST"
+              className="space-y-3 w-full text-left"
+            >
+              <input type="text" name="name" placeholder="Your Name" className="form-input w-full text-sm" required />
+              <input type="email" name="email" placeholder="Your Email" className="form-input w-full text-sm" required />
+              <select name="budget" className="form-input w-full text-sm bg-transparent">
+                <option value="">Budget Range</option>
+                <option value="£250-£500">£250 - £500</option>
+                <option value="£500-£1000">£500 - £1,000</option>
+                <option value="£1000+">£1,000+</option>
+              </select>
+              <textarea name="message" placeholder="Tell us about your project..." rows={3} className="form-input w-full text-sm resize-none" required />
+              <button type="submit" className="btn-primary w-full py-3 text-sm">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Sections - Hidden on mobile */}
+      <div className="hidden md:block">
       {/* Section 1: Hero */}
       <section ref={heroRef} className="section-pinned z-10">
         <div className="relative md:absolute inset-0 flex flex-col md:flex-row items-center justify-center px-5 sm:px-6 md:px-[8vw] py-6 md:py-0 gap-4 md:gap-0">
@@ -1630,6 +1816,23 @@ function App() {
           </div>
         </div>
       )}
+      
+      {/* Mobile Bottom Navigation */}
+      <nav className="mobile-bottom-nav md:hidden">
+        {mobilePages.map((page, index) => (
+          <button
+            key={page.id}
+            onClick={() => goToPage(index)}
+            className={`mobile-bottom-nav-item ${currentPage === index ? 'active' : ''}`}
+          >
+            <svg className="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d={page.icon} />
+            </svg>
+            <span>{page.label}</span>
+          </button>
+        ))}
+      </nav>
+      </div>{/* Close desktop-only div */}
     </div>
 
     {/* Studio Page Modal */}
