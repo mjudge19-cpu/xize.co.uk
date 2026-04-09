@@ -1212,44 +1212,47 @@ function App() {
               <p className="text-[#A7ACB5] text-xs mt-1">Tap to view project details</p>
             </div>
             <div className="grid grid-cols-1 gap-3 w-full overflow-y-auto pb-4" style={{ maxHeight: 'calc(100vh - 220px)' }}>
-              {filteredProjects.slice(0, 4).map((project, index) => (
-                <div 
-                  key={project.id}
-                  className={`work-card relative overflow-hidden rounded-xl ${project.isPlaceholder ? '' : 'cursor-pointer'} active:scale-[0.98] transition-transform`}
-                  onClick={() => {
-                    if (!project.isPlaceholder) {
-                      openProject(project, index);
-                    }
-                  }}
-                  style={{ pointerEvents: 'auto' }}
-                >
-                  <div className="relative aspect-[16/9] overflow-hidden bg-[#1a1a1a]">
-                    {(project as {isVideo?: boolean}).isVideo ? (
-                      <video 
-                        src={project.image}
-                        autoPlay muted loop playsInline
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0D] via-[#0B0B0D]/60 to-transparent opacity-90" />
-                    {!project.isPlaceholder && (
-                      <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#B8FF2C] flex items-center justify-center">
-                        <ExternalLink className="w-4 h-4 text-[#0B0B0D]" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="absolute inset-0 flex flex-col justify-end p-3">
-                    <div className="flex flex-wrap gap-1.5 mb-1">
-                      {project.tags?.map((tag) => (
-                        <span key={tag} className="micro-label text-[#B8FF2C] text-[9px]">{tag}</span>
-                      ))}
+              {filteredProjects.slice(0, 4).map((project) => {
+                const realIndex = filteredProjects.findIndex(p => p.id === project.id);
+                return (
+                  <div 
+                    key={project.id}
+                    className={`work-card relative overflow-hidden rounded-xl ${project.isPlaceholder ? '' : 'cursor-pointer'} active:scale-[0.98] transition-transform`}
+                    onClick={() => {
+                      if (!project.isPlaceholder) {
+                        openProject(project, realIndex);
+                      }
+                    }}
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <div className="relative aspect-[16/9] overflow-hidden bg-[#1a1a1a]">
+                      {(project as {isVideo?: boolean}).isVideo ? (
+                        <video 
+                          src={project.image}
+                          autoPlay muted loop playsInline
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0D] via-[#0B0B0D]/60 to-transparent opacity-90" />
+                      {!project.isPlaceholder && (
+                        <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#B8FF2C] flex items-center justify-center pointer-events-none">
+                          <ExternalLink className="w-4 h-4 text-[#0B0B0D]" />
+                        </div>
+                      )}
                     </div>
-                    <h3 className="text-base font-bold text-[#F4F6F8]">{project.title}</h3>
+                    <div className="absolute inset-0 flex flex-col justify-end p-3 pointer-events-none">
+                      <div className="flex flex-wrap gap-1.5 mb-1">
+                        {project.tags?.map((tag) => (
+                          <span key={tag} className="micro-label text-[#B8FF2C] text-[9px]">{tag}</span>
+                        ))}
+                      </div>
+                      <h3 className="text-base font-bold text-[#F4F6F8]">{project.title}</h3>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -1696,8 +1699,9 @@ function App() {
           </div>
         </footer>
       </section>
+      </div>{/* Close desktop-only div */}
 
-      {/* Project Detail Modal */}
+      {/* Project Detail Modal - Outside desktop-only div for mobile */}
       {selectedProject && (
         <div 
           ref={projectDetailRef}
@@ -1842,7 +1846,6 @@ function App() {
           </button>
         ))}
       </nav>
-      </div>{/* Close desktop-only div */}
     </div>
 
     {/* Studio Page Modal */}
