@@ -1047,84 +1047,132 @@ function App() {
         </button>
       </nav>
       
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[99] bg-[#0B0B0D]/95 backdrop-blur-lg flex flex-col items-center justify-center gap-8 md:hidden">
-          <button 
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setTimeout(() => scrollToSection(workRef.current), 100);
-            }}
-            className="text-2xl font-bold text-[#F4F6F8] hover:text-[#B8FF2C] transition-colors bg-transparent border-none cursor-pointer"
+        <div 
+          className="fixed inset-0 z-[99] md:hidden mobile-menu-enter mobile-menu-enter-active"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-[#0B0B0D]/98 backdrop-blur-xl" />
+          
+          {/* Close button */}
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="absolute top-4 right-4 p-2 rounded-full hover:bg-[#F4F6F8]/10 transition-colors"
+            aria-label="Close menu"
           >
-            Work
+            <X className="w-6 h-6 text-[#F4F6F8]" />
           </button>
-          <button 
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setTimeout(() => scrollToSection(servicesRef.current), 100);
-            }}
-            className="text-2xl font-bold text-[#F4F6F8] hover:text-[#B8FF2C] transition-colors bg-transparent border-none cursor-pointer"
+          
+          {/* Menu content */}
+          <div 
+            className="relative h-full flex flex-col items-center justify-center gap-6 px-6"
+            onClick={(e) => e.stopPropagation()}
           >
-            Services
-          </button>
-          <button 
-            onClick={() => {
-              setMobileMenuOpen(false);
-              openStudio();
-            }}
-            className="text-2xl font-bold text-[#F4F6F8] hover:text-[#B8FF2C] transition-colors bg-transparent border-none cursor-pointer"
-          >
-            Studio
-          </button>
-          <button 
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setTimeout(() => scrollToSection(contactRef.current), 100);
-            }}
-            className="text-2xl font-bold text-[#F4F6F8] hover:text-[#B8FF2C] transition-colors bg-transparent border-none cursor-pointer"
-          >
-            Contact
-          </button>
+            {/* Logo */}
+            <div className="absolute top-5 left-6">
+              <span className="micro-label text-[#A7ACB5] text-xs">MENU</span>
+            </div>
+            
+            {/* Nav Links */}
+            <nav className="flex flex-col items-center gap-4 w-full max-w-xs">
+              {[
+                { label: 'Work', action: () => { setMobileMenuOpen(false); setTimeout(() => scrollToSection(workRef.current), 300); } },
+                { label: 'Services', action: () => { setMobileMenuOpen(false); setTimeout(() => scrollToSection(servicesRef.current), 300); } },
+                { label: 'Studio', action: () => { setMobileMenuOpen(false); openStudio(); } },
+                { label: 'Contact', action: () => { setMobileMenuOpen(false); setTimeout(() => scrollToSection(contactRef.current), 300); } },
+              ].map((item, index) => (
+                <button
+                  key={item.label}
+                  onClick={item.action}
+                  className="mobile-nav-link text-3xl font-bold text-[#F4F6F8] hover:text-[#B8FF2C] transition-all duration-300 bg-transparent border-none cursor-pointer py-3"
+                  style={{ 
+                    opacity: 0,
+                    animation: `fadeInUp 0.4s ease forwards`,
+                    animationDelay: `${index * 75}ms`
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+            
+            {/* Bottom info */}
+            <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-3">
+              <a 
+                href="mailto:hello@xize.co.uk" 
+                className="text-[#A7ACB5] text-sm hover:text-[#B8FF2C] transition-colors"
+              >
+                hello@xize.co.uk
+              </a>
+              <div className="flex gap-6">
+                <a href="#" className="text-[#A7ACB5] text-xs hover:text-[#F4F6F8] transition-colors">Instagram</a>
+                <a href="#" className="text-[#A7ACB5] text-xs hover:text-[#F4F6F8] transition-colors">LinkedIn</a>
+              </div>
+            </div>
+          </div>
         </div>
       )}
+      
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
 
       {/* Section 1: Hero */}
       <section ref={heroRef} className="section-pinned z-10">
-        <div className="relative md:absolute inset-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-[8vw] py-8 md:py-0">
+        <div className="relative md:absolute inset-0 flex flex-col md:flex-row items-center justify-center px-5 sm:px-6 md:px-[8vw] py-6 md:py-0 gap-4 md:gap-0">
           {/* Text Content */}
-          <div className="relative z-20 text-center md:text-left md:w-1/2 order-2 md:order-1 mt-8 md:mt-0">
-            <div className="mb-4 md:mb-6">
-              <span className="micro-label text-[#A7ACB5] text-xs md:text-sm">CREATIVE STUDIO</span>
+          <div className="relative z-20 text-center md:text-left md:w-1/2 order-2 md:order-1 mt-4 md:mt-0">
+            <div className="mb-3 md:mb-6">
+              <span className="micro-label text-[#A7ACB5] text-[10px] sm:text-xs md:text-sm tracking-wider">CREATIVE STUDIO</span>
             </div>
             
             <div ref={heroHeadlineRef}>
-              <h1 className="headline-xl text-[clamp(32px,8vw,72px)] text-[#F4F6F8] leading-[0.95]">
+              <h1 className="headline-xl text-[clamp(28px,10vw,72px)] sm:text-[clamp(32px,8vw,72px)] text-[#F4F6F8] leading-[0.95]">
                 <span className="word block">WE CRAFT</span>
                 <span className="word block">DIGITAL</span>
-                <span className="word block">EXPERIENCES</span>
+                <span className="word block text-[#B8FF2C]">EXPERIENCES</span>
               </h1>
             </div>
             
-            <div ref={heroCtaRef} className="mt-6 md:mt-8">
-              <button 
-                onClick={() => scrollToSection(workRef.current)}
-                className="btn-primary inline-block text-sm md:text-base px-6 md:px-8 py-2.5 md:py-3 cursor-pointer border-none"
-              >
-                Explore Work
-              </button>
-            </div>
-            
-            <p className="text-[#A7ACB5] text-xs md:text-sm mt-6 max-w-sm mx-auto md:mx-0 leading-relaxed">
+            <p className="text-[#A7ACB5] text-xs sm:text-sm mt-4 md:mt-6 max-w-xs sm:max-w-sm mx-auto md:mx-0 leading-relaxed px-2 md:px-0">
               Design systems, immersive sites, and interaction craft for brands that want to stand out.
             </p>
+            
+            <div ref={heroCtaRef} className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+              <button 
+                onClick={() => scrollToSection(workRef.current)}
+                className="btn-primary inline-flex items-center justify-center gap-2 text-sm md:text-base px-6 md:px-8 py-3 md:py-3 cursor-pointer border-none min-h-[48px]"
+              >
+                Explore Work
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <button 
+                onClick={() => scrollToSection(contactRef.current)}
+                className="btn-outline inline-flex items-center justify-center text-sm md:text-base px-6 md:px-8 py-3 md:py-3 cursor-pointer border-none min-h-[48px]"
+              >
+                Get in Touch
+              </button>
+            </div>
           </div>
           
           {/* Circle Image */}
           <div className="relative md:w-1/2 flex items-center justify-center order-1 md:order-2">
             <div 
               ref={heroCircleRef}
-              className="media-circle w-[65vw] h-[65vw] md:w-[45vw] md:h-[45vw] max-w-[320px] max-h-[320px] md:max-w-[500px] md:max-h-[500px] flex items-center justify-center bg-[#0B0B0D]/50"
+              className="media-circle w-[55vw] h-[55vw] sm:w-[50vw] sm:h-[50vw] md:w-[45vw] md:h-[45vw] max-w-[260px] max-h-[260px] sm:max-w-[300px] sm:max-h-[300px] md:max-w-[500px] md:max-h-[500px] flex items-center justify-center bg-[#0B0B0D]/50"
             >
               <svg 
                 viewBox="0 0 593.14 595.28" 
@@ -1307,17 +1355,18 @@ function App() {
       </section>
 
       {/* Section 6: Work - Compact Cards */}
-      <section ref={workRef} id="work" className="relative z-[60] py-16 md:py-24 px-4 md:px-[8vw]">
-        <div className="mb-8 md:mb-12">
-          <h2 className="headline-xl text-[clamp(24px,4vw,48px)] text-[#F4F6F8]">SELECTED WORK</h2>
+      <section ref={workRef} id="work" className="relative z-[60] py-12 md:py-24 px-4 sm:px-5 md:px-[8vw]">
+        <div className="mb-6 md:mb-12">
+          <h2 className="headline-xl text-[clamp(28px,6vw,48px)] md:text-[clamp(24px,4vw,48px)] text-[#F4F6F8]">SELECTED WORK</h2>
+          <p className="text-[#A7ACB5] text-xs md:text-sm mt-2">Tap any project to view details</p>
         </div>
         
         {/* Compact project grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
           {filteredProjects.map((project, index) => (
             <div 
               key={project.id} 
-              className={`work-card group relative overflow-hidden rounded-xl md:rounded-2xl ${project.isPlaceholder ? '' : 'cursor-pointer'}`}
+              className={`work-card group relative overflow-hidden rounded-xl md:rounded-2xl ${project.isPlaceholder ? '' : 'cursor-pointer active:scale-[0.98]'} transition-transform duration-200`}
               onClick={() => !project.isPlaceholder && openProject(project, index)}
             >
               {/* Background image/video */}
@@ -1340,18 +1389,25 @@ function App() {
                 )}
                 {/* Gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0D] via-[#0B0B0D]/60 to-transparent opacity-90" />
+                
+                {/* Mobile View Indicator */}
+                {!project.isPlaceholder && (
+                  <div className="work-card-view-indicator md:hidden">
+                    <ExternalLink className="w-4 h-4 text-[#0B0B0D]" />
+                  </div>
+                )}
               </div>
               
               {/* Content overlay */}
-              <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-6">
+              <div className="absolute inset-0 flex flex-col justify-end p-3 sm:p-4 md:p-6">
                 <div className="flex items-end justify-between">
                   <div>
-                    <div className="flex gap-2 mb-2">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
                       {project.tags?.map((tag) => (
-                        <span key={tag} className="micro-label text-[#B8FF2C] text-[10px] md:text-xs">{tag}</span>
+                        <span key={tag} className="micro-label text-[#B8FF2C] text-[9px] sm:text-[10px] md:text-xs">{tag}</span>
                       ))}
                     </div>
-                    <h3 className="text-xl md:text-2xl font-bold text-[#F4F6F8] group-hover:text-[#B8FF2C] transition-colors">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#F4F6F8] group-hover:text-[#B8FF2C] transition-colors">
                       {project.title}
                     </h3>
                   </div>
@@ -1373,60 +1429,74 @@ function App() {
       </section>
 
       {/* Section 7: Contact */}
-      <section ref={contactRef} id="contact" className="relative z-[70] py-16 md:py-24 px-4 md:px-[8vw]">
+      <section ref={contactRef} id="contact" className="relative z-[70] py-14 md:py-24 px-4 sm:px-5 md:px-[8vw]">
         <div className="headline-group text-center mb-6 md:mb-8">
-          <h2 className="headline-xl text-[clamp(28px,5vw,56px)] text-[#F4F6F8]">READY WHEN YOU ARE.</h2>
+          <h2 className="headline-xl text-[clamp(26px,7vw,56px)] md:text-[clamp(28px,5vw,56px)] text-[#F4F6F8]">READY WHEN YOU ARE.</h2>
           <p className="text-[#A7ACB5] mt-3 md:mt-4 text-sm">Send a brief, a moodboard, or just a hello.</p>
         </div>
         
-        <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4 mb-12 md:mb-16">
-          <button 
-            onClick={() => scrollToSection(contactRef.current)}
-            className="btn-primary inline-block text-center text-sm md:text-base px-5 md:px-8 py-2.5 md:py-3 cursor-pointer border-none"
+        <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4 mb-10 md:mb-16">
+          <a 
+            href="mailto:hello@xize.co.uk"
+            className="btn-primary inline-flex items-center justify-center gap-2 text-sm md:text-base px-5 md:px-8 py-3 md:py-3 cursor-pointer border-none min-h-[48px]"
           >
-            Start a Project
-          </button>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Email Us
+          </a>
           <button 
             onClick={() => scrollToSection(servicesRef.current)}
-            className="btn-outline inline-block text-center text-sm md:text-base px-5 md:px-8 py-2.5 md:py-3 cursor-pointer border-none bg-transparent"
+            className="btn-outline inline-flex items-center justify-center text-sm md:text-base px-5 md:px-8 py-3 md:py-3 cursor-pointer border-none bg-transparent min-h-[48px]"
           >
             View Services
           </button>
         </div>
         
-        <div className="contact-form max-w-lg mx-auto mb-16 md:mb-20">
+        <div className="contact-form max-w-lg mx-auto mb-12 md:mb-20">
           <form 
             action="https://formspree.io/f/xreojakb" 
             method="POST"
             className="space-y-4 md:space-y-6"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-              <input type="text" name="name" placeholder="Name" className="form-input text-sm" required />
-              <input type="email" name="email" placeholder="Email" className="form-input text-sm" required />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+              <input type="text" name="name" placeholder="Your Name" className="form-input text-sm sm:text-base" required />
+              <input type="email" name="email" placeholder="Your Email" className="form-input text-sm sm:text-base" required />
             </div>
-            <select name="budget" className="form-input text-sm">
-              <option value="">Budget Range</option>
+            <select name="budget" className="form-input text-sm sm:text-base bg-transparent">
+              <option value="">Select Budget Range</option>
               <option value="£250-£500">£250 - £500</option>
               <option value="£500-£1000">£500 - £1,000</option>
               <option value="£1000+">£1,000+</option>
             </select>
-            <textarea name="message" placeholder="Tell us about your project" rows={4} className="form-input text-sm resize-none" required />
-            <button type="submit" className="btn-primary w-full text-sm md:text-base py-2.5 md:py-3">Send Message</button>
+            <textarea name="message" placeholder="Tell us about your project..." rows={4} className="form-input text-sm sm:text-base resize-none" required />
+            <button type="submit" className="btn-primary w-full text-sm md:text-base py-3 md:py-3 min-h-[48px]">
+              Send Message
+            </button>
           </form>
         </div>
         
         {/* Footer */}
         <footer className="border-t border-[rgba(244,246,248,0.1)] pt-6 md:pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-[#A7ACB5] text-xs md:text-sm">
+            <div className="text-[#A7ACB5] text-xs md:text-sm text-center md:text-left">
               © 2026 XIZE. Built with care.
             </div>
-            <button 
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="micro-label text-[#A7ACB5] hover:text-[#F4F6F8] transition-colors text-xs"
-            >
-              Back to top
-            </button>
+            <div className="flex items-center gap-4">
+              <a href="mailto:hello@xize.co.uk" className="text-[#A7ACB5] text-xs hover:text-[#B8FF2C] transition-colors">
+                hello@xize.co.uk
+              </a>
+              <span className="text-[#A7ACB5]/30 hidden sm:inline">|</span>
+              <button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="micro-label text-[#A7ACB5] hover:text-[#F4F6F8] transition-colors text-xs flex items-center gap-1"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+                Top
+              </button>
+            </div>
           </div>
         </footer>
       </section>
@@ -1572,14 +1642,14 @@ function App() {
           {/* Close button */}
           <button 
             onClick={closeStudio}
-            className="fixed top-4 right-4 md:top-6 md:right-6 z-[210] w-10 h-10 md:w-12 md:h-12 rounded-full border border-[#F4F6F8]/20 bg-[#0B0B0D]/50 backdrop-blur-sm flex items-center justify-center hover:bg-[#F4F6F8]/20 transition-colors pointer-events-auto cursor-pointer"
+            className="fixed top-3 right-3 sm:top-4 sm:right-4 md:top-6 md:right-6 z-[210] w-10 h-10 md:w-12 md:h-12 rounded-full border border-[#F4F6F8]/20 bg-[#0B0B0D]/50 backdrop-blur-sm flex items-center justify-center hover:bg-[#F4F6F8]/20 transition-colors pointer-events-auto cursor-pointer"
             aria-label="Close studio page"
           >
             <X className="w-4 h-4 md:w-5 md:h-5 text-[#F4F6F8]" />
           </button>
           
           {/* Hero Section */}
-          <div className="relative h-[50vh] md:h-[60vh] flex items-center justify-center">
+          <div className="relative h-[45vh] sm:h-[50vh] md:h-[60vh] flex items-center justify-center">
             <div className="absolute inset-0">
               <img 
                 src="/images/about_circle_workspace.jpg" 
@@ -1588,29 +1658,29 @@ function App() {
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0B0B0D]/50 to-[#0B0B0D]" />
             </div>
-            <div className="relative z-10 text-center px-6">
-              <span className="micro-label text-[#B8FF2C] text-xs mb-4 block">ABOUT US</span>
-              <h1 className="headline-xl text-[clamp(36px,8vw,80px)] text-[#F4F6F8] mb-4">
+            <div className="relative z-10 text-center px-5 sm:px-6">
+              <span className="micro-label text-[#B8FF2C] text-[10px] sm:text-xs mb-3 sm:mb-4 block">ABOUT US</span>
+              <h1 className="headline-xl text-[clamp(32px,10vw,80px)] text-[#F4F6F8] mb-3 sm:mb-4">
                 WE ARE XIZE
               </h1>
-              <p className="text-[#A7ACB5] text-base md:text-lg max-w-md mx-auto">
+              <p className="text-[#A7ACB5] text-sm sm:text-base md:text-lg max-w-xs sm:max-w-md mx-auto px-2 sm:px-0">
                 A creative studio crafting digital experiences that captivate and convert.
               </p>
             </div>
           </div>
           
           {/* Content */}
-          <div className="px-6 md:px-16 lg:px-24 pb-16 md:pb-24 -mt-20 relative z-10">
+          <div className="px-5 sm:px-6 md:px-16 lg:px-24 pb-12 sm:pb-16 md:pb-24 -mt-16 sm:-mt-20 relative z-10">
             {/* Story Section */}
-            <div className="max-w-3xl mb-16 md:mb-24">
-              <h2 className="headline-xl text-[clamp(24px,4vw,40px)] text-[#F4F6F8] mb-6">
+            <div className="max-w-3xl mb-12 sm:mb-16 md:mb-24">
+              <h2 className="headline-xl text-[clamp(22px,6vw,40px)] md:text-[clamp(24px,4vw,40px)] text-[#F4F6F8] mb-4 sm:mb-6">
                 OUR STORY
               </h2>
-              <p className="text-[#A7ACB5] text-base md:text-lg leading-relaxed mb-6">
+              <p className="text-[#A7ACB5] text-sm sm:text-base md:text-lg leading-relaxed mb-4 sm:mb-6">
                 Founded in 2026, XIZE started with a simple belief: great design should be both beautiful and functional. 
                 We set out to create digital experiences that don't just look good—they perform.
               </p>
-              <p className="text-[#A7ACB5] text-base md:text-lg leading-relaxed">
+              <p className="text-[#A7ACB5] text-sm sm:text-base md:text-lg leading-relaxed">
                 Today, we're a tight-knit team of designers, developers, and strategists who bring diverse perspectives 
                 to every project. We don't do cookie-cutter solutions. Every brand we work with gets a bespoke 
                 experience tailored to their unique goals and audience.
@@ -1618,7 +1688,7 @@ function App() {
             </div>
             
             {/* Values */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-16 md:mb-24">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-6 md:gap-12 mb-12 sm:mb-16 md:mb-24">
               <div>
                 <div className="w-12 h-12 rounded-full border border-[#B8FF2C]/30 flex items-center justify-center mb-4">
                   <span className="text-[#B8FF2C] text-xl">01</span>
@@ -1649,11 +1719,11 @@ function App() {
             </div>
             
             {/* Team */}
-            <div className="mb-16 md:mb-24">
-              <h2 className="headline-xl text-[clamp(24px,4vw,40px)] text-[#F4F6F8] mb-8">
+            <div className="mb-12 sm:mb-16 md:mb-24">
+              <h2 className="headline-xl text-[clamp(22px,6vw,40px)] md:text-[clamp(24px,4vw,40px)] text-[#F4F6F8] mb-6 sm:mb-8">
                 THE TEAM
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4 md:gap-8">
                 <div className="text-center">
                   <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-[#3a3a3a] to-[#1a1a1a] mx-auto mb-4 flex items-center justify-center">
                     <span className="text-2xl md:text-3xl text-[#F4F6F8]">MJ</span>
@@ -1679,22 +1749,22 @@ function App() {
             </div>
             
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-16 md:mb-24 border-t border-b border-[rgba(244,246,248,0.1)] py-8 md:py-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mb-12 sm:mb-16 md:mb-24 border-t border-b border-[rgba(244,246,248,0.1)] py-6 sm:py-8 md:py-12">
               <div className="text-center">
-                <div className="text-[clamp(32px,5vw,48px)] font-bold text-[#B8FF2C] mb-1">50+</div>
-                <div className="text-[#A7ACB5] text-sm">Projects Delivered</div>
+                <div className="text-[clamp(28px,8vw,48px)] font-bold text-[#B8FF2C] mb-1">50+</div>
+                <div className="text-[#A7ACB5] text-xs sm:text-sm">Projects Delivered</div>
               </div>
               <div className="text-center">
-                <div className="text-[clamp(32px,5vw,48px)] font-bold text-[#B8FF2C] mb-1">30+</div>
-                <div className="text-[#A7ACB5] text-sm">Happy Clients</div>
+                <div className="text-[clamp(28px,8vw,48px)] font-bold text-[#B8FF2C] mb-1">30+</div>
+                <div className="text-[#A7ACB5] text-xs sm:text-sm">Happy Clients</div>
               </div>
               <div className="text-center">
-                <div className="text-[clamp(32px,5vw,48px)] font-bold text-[#B8FF2C] mb-1">5</div>
-                <div className="text-[#A7ACB5] text-sm">Years Experience</div>
+                <div className="text-[clamp(28px,8vw,48px)] font-bold text-[#B8FF2C] mb-1">5</div>
+                <div className="text-[#A7ACB5] text-xs sm:text-sm">Years Experience</div>
               </div>
               <div className="text-center">
-                <div className="text-[clamp(32px,5vw,48px)] font-bold text-[#B8FF2C] mb-1">12</div>
-                <div className="text-[#A7ACB5] text-sm">Awards Won</div>
+                <div className="text-[clamp(28px,8vw,48px)] font-bold text-[#B8FF2C] mb-1">12</div>
+                <div className="text-[#A7ACB5] text-xs sm:text-sm">Awards Won</div>
               </div>
             </div>
             
